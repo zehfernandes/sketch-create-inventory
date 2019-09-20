@@ -1,0 +1,29 @@
+{
+  "compatibleVersion": 3,
+  "bundleVersion": 1,
+  "commands": [
+    {
+      "name": "Configuration",
+      "identifier": "create-inventory.openWebview",
+      "script": "./my-command.js",
+      "handlers": {
+        "run": "onRun",
+        "actions": {
+          "Shutdown": "onShutdown"
+        }
+      }
+    },
+    {
+      "name": "run",
+      "identifier": "create-inventory.run",
+      "script": "./generator.js",
+      "handlers": {
+        "run": "onRun"
+      }
+    }
+  ],
+  "menu": {
+    "title": "create-inventory",
+    "items": ["create-inventory.openWebview", "create-inventory.run"]
+  }
+}

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>create-inventory</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body style="background:#fff; font-family: 'Helvetica Neue'; padding: 20px">
+  <h2>Create Inventary</h2>
+  <br />
+
+  <h4>Library Files</h4>
+  <input type="file"/>
+  <br />
+  <br />
+  <a href=>Add new field</a>
+  <br />
+  <hr />
+  <br/>
+  <br />
+
+  <h4>Breakpoints</h4>
+  <div style="clear:both"> 
+    <div style="float:left; width:60%; margin-right: 10px"> 
+      <label style="display:block">Name</label>
+      <input type="text" style="width:100%" name="desktop" />
+    </div>
+    <div style="float:left; width:35%";>
+      <label style="display:block">Size</label>
+      <input type="text" style="width:100%" name="size" />
+    </div>
+  </div>
+  <br />
+  <br />
+  <br />
+  <a href=>Add new breakpoint</a>
+  <br />
+  <hr />
+  <br />
+  <div>
+    <button id="button">Save</button>
+  </div>
+  <div id="answer"></div>
+
+  <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
+  <script src="../webview.js"></script>
+</body>
+</html>
