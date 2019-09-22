@@ -2,31 +2,23 @@ import Sketch from "sketch";
 import nest from "./utils.js";
 import _ from "lodash";
 
-const CONFIGS = {
-  arboardMargins: [500, 500],
-  breakpoints: [
-    {
-      name: "Desktop",
-      size: 1440
-    },
-    {
-      name: "Mobile",
-      size: 375
-    }
-  ],
-  areaMargins: [100, 100],
-  commentArea: 510,
-  itemMargin: [20, 50],
-  stateMargin: [20, 20]
-};
+// const CONFIGS = {
+//   arboardMargins: [500, 500],
+//   areaMargins: [100, 100],
+//   commentArea: 510,
+//   itemMargin: [20, 50],
+//   stateMargin: [20, 20]
+// };
 
 const document = Sketch.fromNative(context.document);
 const page = document.selectedPage;
 const sketchData = document.sketchObject.documentData();
 
-function getLibrary(lib) {
+function getLibrary(libName) {
   const libraries = Sketch.getLibraries();
-  const library = libraries[lib];
+  const library = libraries.find(obj => {
+    return libName === obj.name;
+  });
 
   const librarySymbols = library
     .getDocument()
@@ -36,29 +28,41 @@ function getLibrary(lib) {
   return [library, librarySymbols];
 }
 
+function getBreakpointIndex(name) {
+  let breakpointIndex = breakpoints.indexOf(
+    breakpoints.find(l => name.includes(l.name))
+  );
+
+  return breakpointIndex != -1 ? breakpointIndex : 0;
+}
+
 function parseName(name) {
-  //let parsed = name.match(/(?![\w]\))[A-Za-z]+/g);
-  let parsed = name
-    .replace("Mobile", "") //Gamb
-    .replace(/ +?/g, "")
-    .split("/");
+  let breakpoint = getBreakpointIndex(name);
+
+  let parsed = "";
+  breakpoints.forEach(b => {
+    parsed = name.replace(b.name, "");
+  });
+
+  parsed = parsed.replace(/ +?/g, "").split("/");
 
   return {
     artboardName: parsed[0],
     sectionName: parsed[1],
+    breakpoint,
     state: parsed.slice(2, parsed.length).join("")
   };
 }
 
-function parseTree(symbolsTree) {
+function parseTree(symbolsTree, allLibraries) {
   const tree = [];
 
   symbolsTree.forEach((arr, index) => {
     arr.forEach(elm => {
       let props = parseName(elm.name());
       tree.push({
+        library: allLibraries[index],
         symbol: elm,
-        breakpoint: index,
         ...props
       });
     });
@@ -67,16 +71,37 @@ function parseTree(symbolsTree) {
   return nest(tree, ["artboardName", "sectionName", "state"]);
 }
 
+// CONFIGS
+const libraryFiles = [
+  "PX_Styleguide_Presale_20190828",
+  "PX_MobileStyleguide_Presale_20190828"
+];
+
+const breakpoints = [
+  {
+    name: "Desktop",
+    size: 1440
+  },
+  {
+    name: "Mobile",
+    size: 375
+  }
+];
+
 export default function() {
   // const arboardSize = [3600, 5000];
   // const HeaderSymbol = findSymbolByName("Header");
   // const BreakpointSymbol = findSymbolByName("Header");
 
   // TODO: Recieve library from UI
-  const [desktopLibrary, desktopSymbols] = getLibrary(1);
-  const [mobileLibrary, mobileSymbols] = getLibrary(2);
+  const libraries = libraryFiles.map(name => {
+    return getLibrary(name);
+  });
 
-  const drawTree = parseTree([desktopSymbols, mobileSymbols]);
+  const allSymbols = libraries.map(l => l[1]);
+  const allLibraries = libraries.map(l => l[0]);
+
+  const drawTree = parseTree(allSymbols, allLibraries);
   console.log(drawTree);
 
   let tickY = 300;
@@ -98,10 +123,7 @@ export default function() {
 
           let symbolMaster = importForeignSymbol(
             element.symbol,
-            //TODO: One library?
-            element.breakpoint == 0
-              ? desktopLibrary.sketchObject
-              : mobileLibrary.sketchObject
+            element.library.sketchObject
           );
 
           let symbolInstance = symbolMaster.createNewInstance();
