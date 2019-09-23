@@ -1,32 +1,10 @@
-import Sketch from "sketch";
-import nest from "./utils.js";
-import _ from "lodash";
-
-// const CONFIGS = {
-//   arboardMargins: [500, 500],
-//   areaMargins: [100, 100],
-//   commentArea: 510,
-//   itemMargin: [20, 50],
-//   stateMargin: [20, 20]
-// };
-
-const document = Sketch.fromNative(context.document);
-const page = document.selectedPage;
-const sketchData = document.sketchObject.documentData();
-
-function getLibrary(libName) {
-  const libraries = Sketch.getLibraries();
-  const library = libraries.find(obj => {
-    return libName === obj.name;
-  });
-
-  const librarySymbols = library
-    .getDocument()
-    .sketchObject.documentData()
-    .localSymbols();
-
-  return [library, librarySymbols];
-}
+import {
+  nest,
+  getLibrary,
+  findSymbolByName,
+  importForeignSymbol
+} from "./utils.js";
+import { drawArtboard, createHeaderSymbol } from "./elements.js";
 
 function getBreakpointIndex(name) {
   let breakpointIndex = breakpoints.indexOf(
@@ -71,7 +49,18 @@ function parseTree(symbolsTree, allLibraries) {
   return nest(tree, ["artboardName", "sectionName", "state"]);
 }
 
-// CONFIGS
+//----------------------------------------------
+// Configs
+// const CONFIGS = {
+//   arboardMargins: [500, 500],
+//   areaMargins: [100, 100],
+//   commentArea: 510,
+//   itemMargin: [20, 50],
+//   stateMargin: [20, 20]
+// };
+
+let HeaderSymbol, BreakpointSymbol;
+
 const libraryFiles = [
   "PX_Styleguide_Presale_20190828",
   "PX_MobileStyleguide_Presale_20190828"
@@ -88,10 +77,13 @@ const breakpoints = [
   }
 ];
 
+// Start
 export default function() {
-  // const arboardSize = [3600, 5000];
-  // const HeaderSymbol = findSymbolByName("Header");
-  // const BreakpointSymbol = findSymbolByName("Header");
+  // Get sections Symbols
+  HeaderSymbol = findSymbolByName("Header");
+  if (!HeaderSymbol) {
+    HeaderSymbol = createHeaderSymbol();
+  }
 
   // TODO: Recieve library from UI
   const libraries = libraryFiles.map(name => {
@@ -110,9 +102,11 @@ export default function() {
   //Artboard
   for (var artboard in drawTree) {
     const parent = drawArtboard(countLoop, artboard);
+    drawHeader(artboard, parent);
+
     //Section
     for (var section in drawTree[artboard]) {
-      drawBreakpoitSection(section, parent, tickY);
+      drawBreakpointSection(section, parent, tickY);
       tickY = tickY + 90 + 100;
       //Row
       for (var row in drawTree[artboard][section]) {
@@ -147,7 +141,7 @@ export default function() {
   }
 }
 
-function drawBreakpoitSection(name, artboard, y) {
+function drawBreakpointSection(name, artboard, y) {
   const section = findSymbolByName("Breakpoint").createNewInstance();
   section.parent = artboard;
   section.frame.x = 100;
@@ -155,48 +149,10 @@ function drawBreakpoitSection(name, artboard, y) {
   section.setOverrideValue(section.overrides[3], name);
 }
 
-function drawArtboard(i, name) {
-  let artboard = new Sketch.Artboard({
-    name: "",
-    parent: page,
-    background: {
-      enabled: true,
-      color: "#000000"
-    },
-    frame: {
-      x: 3700 * i,
-      y: 0,
-      width: 3600,
-      height: 3000
-    }
-  });
-
-  const header = findSymbolByName("Header").createNewInstance();
+function drawHeader(name, artboard) {
+  const header = HeaderSymbol.createNewInstance();
   header.parent = artboard;
   header.frame.x = 100;
   header.frame.y = 100;
   header.setOverrideValue(header.overrides[1], name);
-
-  return artboard;
-}
-
-function findSymbolByName(name) {
-  const symbols = document.getSymbols();
-  return symbols.find(symb => {
-    return symb.name == name;
-  });
-}
-
-function importForeignSymbol(symbol, library) {
-  var objectReference = MSShareableObjectReference.referenceForShareableObject_inLibrary(
-    symbol,
-    library
-  );
-
-  const symbolMaster = AppController.sharedInstance()
-    .librariesController()
-    .importShareableObjectReference_intoDocument(objectReference, sketchData)
-    .symbolMaster();
-
-  return Sketch.fromNative(symbolMaster);
 }
