@@ -1,48 +1,67 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="utf-8">
-  <title>create-inventory</title>
-  <link rel="stylesheet" href="./style.css">
-</head>
-<body style="background:#fff; font-family: 'Helvetica Neue'; padding: 20px">
-  <h2>Create Inventary</h2>
-  <br />
+  <head>
+    <meta charset="utf-8" />
+    <title>create-inventory</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" href="./tachyons.css" />
+  </head>
+  <body class="helvetica pa3 navy bg-white">
+    <h2 class="f3 mb3">Create Inventary</h2>
 
-  <h4>Library Files</h4>
-  <input type="file"/>
-  <br />
-  <br />
-  <a href=>Add new field</a>
-  <br />
-  <hr />
-  <br/>
-  <br />
+    <div class="w-100 pb2 pt2">
+      <div id="libFile" class="measure">
+        <label for="name" class="f6 b db mb2">Library</label>
+        <small id="name-desc" class="f6 black-60 db mb2"
+          >Helper text for the form control.</small
+        >
+        <input
+          id="name"
+          class="input-reset ba b--black-20 pa2 mb2 db w-100"
+          type="text"
+          aria-describedby="name-desc"
+        />
+      </div>
 
-  <h4>Breakpoints</h4>
-  <div style="clear:both"> 
-    <div style="float:left; width:60%; margin-right: 10px"> 
-      <label style="display:block">Name</label>
-      <input type="text" style="width:100%" name="desktop" />
+      <a href="#" class="f6 link blue hover-dark-gray">+ Add field</a>
     </div>
-    <div style="float:left; width:35%";>
-      <label style="display:block">Size</label>
-      <input type="text" style="width:100%" name="size" />
-    </div>
-  </div>
-  <br />
-  <br />
-  <br />
-  <a href=>Add new breakpoint</a>
-  <br />
-  <hr />
-  <br />
-  <div>
-    <button id="button">Save</button>
-  </div>
-  <div id="answer"></div>
 
-  <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
-  <script src="../webview.js"></script>
-</body>
+    <div class="w-100 pb2 pt2">
+      <h4 class="f4">Breakpoints</h4>
+      <small id="name-desc" class="f6 black-60 db mb2"
+        >Helper text for the form control.</small
+      >
+
+      <div id="breakpoit" class="measure">
+        <div class="fl w-60">
+          <label for="name" class="f6 b db mb2">Name</label>
+          <input
+            id="name"
+            class="input-reset ba b--black-20 pa2 mb2 db w-100"
+            type="text"
+            aria-describedby="name-desc"
+          />
+        </div>
+
+        <div class="fl w-40">
+          <label for="name" class="f6 b db mb2">Name</label>
+          <input
+            id="name"
+            class="input-reset ba b--black-20 pa2 mb2 db w-100"
+            type="text"
+            aria-describedby="name-desc"
+          />
+        </div>
+      </div>
+
+      <a href="#" class="f6 link blue hover-dark-gray">+ Add field</a>
+    </div>
+
+    <div>
+      <button id="button">Save</button>
+    </div>
+
+    <!-- notice the "../" here. It's because webview.js will be compiled in a different folder -->
+    <script src="../webview.js"></script>
+  </body>
 </html>
