@@ -5,7 +5,7 @@ const sectionArea = 512;
 
 export function createDefaultData() {
   let setting = Settings.settingForKey("inventory-breakpoints");
-  if (setting) return;
+  if (setting) return setting;
 
   const breakpoints = [
     {
@@ -18,7 +18,25 @@ export function createDefaultData() {
     }
   ];
 
+  Settings.setSettingForKey("inventory-libraries", [""]);
   Settings.setSettingForKey("inventory-breakpoints", breakpoints);
+
+  return breakpoints;
+}
+
+// Librarie
+export function getLibraryData() {
+  let l = Settings.settingForKey("inventory-libraries");
+  if (l) return l;
+  else return [""];
+}
+export function saveLibraryData(data) {
+  Settings.setSettingForKey("inventory-libraries", data);
+}
+
+// Breakpoint
+export function saveBreakpointsData(data) {
+  Settings.setSettingForKey("inventory-breakpoints", data);
 }
 
 export function getBreakpointsData() {

@@ -1,6 +1,13 @@
 import BrowserWindow from "sketch-module-web-view";
 import { getWebview } from "sketch-module-web-view/remote";
-import UI from "sketch/ui";
+import Sketch from "sketch";
+import {
+  createDefaultData,
+  saveLibraryData,
+  saveBreakpointsData,
+  getLibraryData
+} from "./functions/data.js";
+import createSymbolInventory from "./generator.js";
 
 const webviewIdentifier = "create-inventory.webview";
 
@@ -23,15 +30,34 @@ export default function() {
 
   // print a message when the page loads
   webContents.on("did-finish-load", () => {
-    UI.message("UI loaded!");
+    Sketch.UI.message("UI loaded!");
+  });
+
+  webContents.on("getConfig", () => {
+    const breakpoints = createDefaultData();
+
+    const libOptions = Sketch.getLibraries();
+
+    const configs = {
+      sketchLibraries: [""], //getLibraryData(),
+      sketchLibs: libOptions.map(l => l.name),
+      sketchBreakpoints: breakpoints
+    };
+
+    console.log(configs);
+
+    webContents
+      .executeJavaScript(`loadConfigs(${JSON.stringify(configs)})`)
+      .catch(console.error);
   });
 
   // add a handler for a call from web content's javascript
-  webContents.on("nativeLog", s => {
-    UI.message(s);
-    webContents
-      .executeJavaScript(`setRandomNumber(${Math.random()})`)
-      .catch(console.error);
+  webContents.on("savePreferences", configs => {
+    console.log(configs);
+    saveLibraryData(configs.librarys);
+    saveBreakpointsData(configs.breakpoints);
+    browserWindow.close();
+    createSymbolInventory();
   });
 
   browserWindow.loadURL(require("../resources/webview.html"));

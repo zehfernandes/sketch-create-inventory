@@ -9,18 +9,17 @@ import {
   createHeaderSymbol,
   createBreakpointSymbol
 } from "./functions/elements.js";
-import { createDefaultData, getXGrid } from "./functions/data.js";
+import { getXGrid, getLibraryData } from "./functions/data.js";
 
 let HeaderSymbol, BreakpointSymbol;
 
-const libraryFiles = [
-  "PX_Styleguide_Presale_20190828",
-  "PX_MobileStyleguide_Presale_20190828"
-];
+let libraryFiles = [];
+//   "PX_Styleguide_Presale_20190828",
+//   "PX_MobileStyleguide_Presale_20190828"
 
 // Start
-export default function() {
-  createDefaultData();
+export default function createSymbolInventory() {
+  libraryFiles = getLibraryData();
 
   // Get sections Symbols
   HeaderSymbol = findSymbolByName("Header");
