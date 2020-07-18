@@ -29,7 +29,7 @@
     "resources/**/*.js"
   ],
   "dependencies": {
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "sketch-module-web-view": "^3.0.1"
   },
   "author": "zehfernandes <ozehfernandes@gmail.com>"
